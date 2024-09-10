@@ -1,46 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
+
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <!-- Подключаем библиотеку axios через CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
 </head>
+
+
 <body>
     <div id="display"></div>
-    <form >
-        color = <input id="color">
-        model = <input id = "model">
-        <button onclick="sendDAta()">Add</button>
-    </form>
+    <hr>
+
+
+    <!-- add new car -->
+    color: <input id="color">
+    model: <input id="model">
+    <button onclick="sendData()">Add</button>
+    <!--end  add new car -->
+
+
     <script>
         const SERVER = "http://127.0.0.1:5000";
-        
-        // Функция для получения данных с сервера
-        const getData= async()=> {
-            res = await axios(SERVER)
-                .then(res => {
-                    document.getElementById('display').innerHTML = res.data
-                        .map(car => `<div style = "color: ${car.color};" >
-                            color: ${car.color}
-                            ${car.model}
-                            </div>`).join('');
-                })
-                .catch(err => console.error('Ошибка:', err));
-        }
-
-        // Вызов функции при загрузке страницы
-            getData();
-
-      
-
-        const sendDAta = async () => {
-            console.log(color.value, model.value);
-            await axios.post(SERVER + "/getdata", {color:color.value, model:model.value})
-        }
+        const display = document.getElementById('display');
+        const color = document.getElementById('color');
+        const model = document.getElementById('model');
 
 
+        const getData = async () => {
+            try {
+                const res = await axios(SERVER);
+                display.innerHTML = res.data.map(car =>
+                    `<div style="color: ${car.color};">
+                    color: ${car.color}
+                    model: ${car.model}
+                    <button onclick="deleteCar(${car.model})">Delete</button>
+                    </div>`
+                ).join("");
+            } catch (error) {
+                console.error("Error fetching data:", error);
+            }
+        };
+        getData();
+
+
+        const sendData = async () => {
+            try {
+                console.log(color.value, model.value);
+                await axios.post(SERVER + "/send_data", {
+                    color: color.value,
+                    model: model.value
+                });
+                getData();
+            } catch (error) {
+                console.error("Error sending data:", error);
+            }
+        };
+
+
+        const deleteCar = async (carModel) => {
+            try {
+                await axios.post(SERVER + "/del_data", {
+                    model: carModel
+                });
+                getData(); // Refresh the displayed data
+            } catch (error) {
+                console.error("Error deleting data:", error);
+            }
+        };
     </script>
 </body>
+
+
 </html>
+
+
+
+
