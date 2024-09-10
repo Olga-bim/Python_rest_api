@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <!-- Подключаем библиотеку axios через CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+    <div id="display"></div>
+    <form >
+        color = <input id="color">
+        model = <input id = "model">
+        <button onclick="sendDAta()">Add</button>
+    </form>
+    <script>
+        const SERVER = "http://127.0.0.1:5000";
+        
+        // Функция для получения данных с сервера
+        const getData= async()=> {
+            res = await axios(SERVER)
+                .then(res => {
+                    document.getElementById('display').innerHTML = res.data
+                        .map(car => `<div style = "color: ${car.color};" >
+                            color: ${car.color}
+                            ${car.model}
+                            </div>`).join('');
+                })
+                .catch(err => console.error('Ошибка:', err));
+        }
+
+        // Вызов функции при загрузке страницы
+            getData();
+
+      
+
+        const sendDAta = async () => {
+            console.log(color.value, model.value);
+            await axios.post(SERVER + "/getdata", {color:color.value, model:model.value})
+        }
+
+
+    </script>
+</body>
+</html>
